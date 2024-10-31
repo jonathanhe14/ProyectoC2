@@ -7,46 +7,69 @@ import "./../app/app.css";
 import { Amplify } from "aws-amplify";
 import outputs from "@/amplify_outputs.json";
 import "@aws-amplify/ui-react/styles.css";
+import { Authenticator, useAuthenticator } from "@aws-amplify/ui-react";
+import { AppProps } from "next/app";
+import { fetchUserAttributes } from "aws-amplify/auth";
+import { getCurrentUser } from "aws-amplify/auth";
+import { useRouter } from "next/navigation";
+
 
 Amplify.configure(outputs);
 
 const client = generateClient<Schema>();
 
-export default function App() {
-  const [todos, setTodos] = useState<Array<Schema["Todo"]["type"]>>([]);
+const adminEmails = ["jonaherrera90@hotmail.com"];
 
-  function listTodos() {
-    client.models.Todo.observeQuery().subscribe({
-      next: (data) => setTodos([...data.items]),
-    });
-  }
+export default function App({ Component, pageProps }: AppProps) {
+  // const router = useRouter();
+  // const [isLoading, setIsLoading] = useState(true);
+  // const { user } = useAuthenticator((context) => [context.user]);
 
+  // useEffect(() => {
+  //   async function userInfo() {
+  //     try {
+  //       const user = await fetchUserAttributes();
+
+  //       if (user.email && adminEmails.includes(user.email)) {
+  //         return router.push("/home");
+  //       } else {
+  //         return router.push("user");
+  //       }
+  //     } catch (error) {
+  //       console.error("Error fetching user attributes:", error);
+  //       return false;
+  //     } finally {
+  //       setIsLoading(false);
+  //     }
+  //   }
+  //   if (user) {
+  //     userInfo(); // Solo verificamos el rol si el usuario está autenticado
+  //   }
+  // }, [user, router]);
+
+  // if (isLoading) {
+  //   return <div>Cargando...</div>;
+  // }
+  const { user, route } = useAuthenticator((context) => [context.user, context.route]);
+  const router = useRouter();
+
+  // Si no está autenticado, redirige al usuario a la página de inicio de sesión
   useEffect(() => {
-    listTodos();
-  }, []);
+    console.log(route);
+    if (route !== 'authenticated') {
+      console.log(user?.signInDetails?.loginId);
+      router.push('/sign-in');
+    }else(
+      router.push('/home')
+    )
+  }, [route, router]);
 
-  function createTodo() {
-    client.models.Todo.create({
-      content: window.prompt("Todo content"),
-    });
+  if (route !== 'authenticated') {
+    return <div>Cargando...</div>;
   }
 
   return (
-    <main>
-      <h1>My todos</h1>
-      <button onClick={createTodo}>+ new</button>
-      <ul>
-        {todos.map((todo) => (
-          <li key={todo.id}>{todo.content}</li>
-        ))}
-      </ul>
-      <div>
-        🥳 App successfully hosted. Try creating a new todo.
-        <br />
-        <a href="https://docs.amplify.aws/nextjs/start/quickstart/nextjs-app-router-client-components/">
-          Review next steps of this tutorial.
-        </a>
-      </div>
-    </main>
+    <div>
+    </div>
   );
 }
