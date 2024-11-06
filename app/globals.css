@@ -1,4 +1,23 @@
-:root {
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.input-field {
+  @apply block w-full p-2 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 text-xs focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500;
+}
+
+.label-field {
+  @apply block mb-2 text-sm font-medium text-gray-900 dark:text-white;
+}
+
+.button {
+  @apply bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full
+}
+
+/* Otros estilos que utilices a menudo */
+
+
+/* :root {
   --max-width: 1100px;
   --border-radius: 12px;
   --font-mono: ui-monospace, Menlo, Monaco, 'Cascadia Mono', 'Segoe UI Mono',
@@ -59,4 +78,4 @@ a {
   html {
     color-scheme: dark;
   }
-}
+} */

@@ -6,20 +6,23 @@ import outputs from "../../amplify_outputs.json";
 import type { Schema } from "../../amplify/data/resource";
 import { generateClient } from "aws-amplify/data";
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import FormClass from "../components/FormClass";
 
 Amplify.configure(outputs);
 interface Class {
-    classId: string | null; // Permitir null
-    className: string | null; // Permitir null
-    availableSlots: number | null; // Permitir null
-  }
+  classId: string | null; // Permitir null
+  className: string | null; // Permitir null
+  availableSlots: number | null; // Permitir null
+}
 
 const client = generateClient<Schema>({
-  authMode: 'apiKey'
+  authMode: "apiKey",
 });
 
 export default function Dashboard() {
-    const [clases, setClases] = useState<Class[]>([]);
+  const route = useRouter();
+  const [clases, setClases] = useState<Class[]>([]);
 
   const fetchClases = async () => {
     try {
@@ -39,30 +42,37 @@ export default function Dashboard() {
     fetchClases();
   }, []);
 
-  const createClass = async () => {
-    try {
-      // Crear una nueva clase
-      const newClass = await client.models.Class.create({
-        classId: "1", // Considera usar un ID único o generarlo dinámicamente
-        className: "Yoga",
-        availableSlots: 10,
-      });
-      console.log("Class created");
-      fetchClases(); // Volver a obtener las clases después de la creación
-    } catch (error) {
-      console.error("Error creating class:", error);
-    }
-  };
-
   return (
     <div>
-      <button onClick={createClass}>Create Class</button>
-      <ul>
-        {clases.map(({ classId, className }) => (
-          <li key={classId}>{className}</li>
-        ))}
-      </ul>
+      <h1 className="text-3xl font-bold mb-2">Proximas Clases</h1>
+      <div className="relative overflow-x-auto">
+  <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+    <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+      <tr>
+        <th scope="col" className="px-6 py-3">Nombre de la Clase</th>
+        <th scope="col" className="px-6 py-3">Cupos Disponibles</th>
+      </tr>
+    </thead>
+    <tbody>
+      {clases.map(({ classId, className, availableSlots }) => (
+        <tr
+          key={classId}
+          className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 rounded-lg"
+        >
+          <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+            {className}
+          </td>
+          <td className="px-6 py-4">{availableSlots}</td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</div>
+
+
+      <button className="button" onClick={() => route.push("/newclass")}>
+        Agregar Clase
+      </button>
     </div>
   );
 }
-

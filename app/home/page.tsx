@@ -37,7 +37,7 @@ function page() {
   function isAdmin() {
     if(user?.signInDetails?.loginId === 'jonaherrera90@hotmail.com'){
       return <div>
-        <button onClick={navigateToDashboard}>Dashbord</button>
+        <button onClick={navigateToDashboard} className='button'>Dashbord</button>
       </div>
     }else{
       return <div>Estoy como usuario normal</div>
@@ -47,7 +47,7 @@ function page() {
   return (
     <div>
       <h1>Este es el Home, {user?.signInDetails?.loginId}</h1>
-      <button onClick={handleSignOut}>Cerrar sesión</button>
+      <button onClick={handleSignOut} className='button'>Cerrar sesión</button>
       {isAdmin()}
     </div>
   );
