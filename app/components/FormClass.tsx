@@ -2,8 +2,10 @@ import { time } from "console";
 import React, { useState, ChangeEvent, FormEvent } from "react";
 import { generateClient } from "aws-amplify/data";
 import type { Schema } from "../../amplify/data/resource";
+import { UUID } from "crypto";
 
 interface ClassData {
+  classId: UUID | null;
   className: string;
   availableSlots: number;
 }
@@ -20,6 +22,7 @@ const client = generateClient<Schema>({
 
 const FormClass: React.FC = () => {
   const [classData, setClassData] = useState<ClassData>({
+    classId: null,
     className: "",
     availableSlots: 0,
   });
@@ -67,6 +70,7 @@ const FormClass: React.FC = () => {
     console.log("Datos de la clase:", classData);
     console.log("Horarios:", timeSlots);
     createClass();
+    createTimeSlot();
   };
 
   const createClass = async () => {
@@ -75,6 +79,20 @@ const FormClass: React.FC = () => {
         classId: crypto.randomUUID(),
         className: classData.className,
         availableSlots: classData.availableSlots,
+      });
+    } catch (error) {
+      console.error("Error al crear la clase", error);
+    }
+  };
+
+  const createTimeSlot = async () => {
+    try {
+      const newClass = await client.models.TimeSlot.create({
+        timeSlotId: crypto.randomUUID(),
+        classId: classData.classId,
+        time: timeSlots[0].time,
+        date: timeSlots[0].date,
+        slotsAvailable: timeSlots[0].slotsAvailable,  
       });
     } catch (error) {
       console.error("Error al crear la clase", error);
