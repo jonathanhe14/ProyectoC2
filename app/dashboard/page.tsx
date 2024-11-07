@@ -11,6 +11,7 @@ import FormClass from "../components/FormClass";
 
 Amplify.configure(outputs);
 interface Class {
+  id: string;
   classId: string | null; // Permitir null
   className: string | null; // Permitir null
   availableSlots: number | null; // Permitir null
@@ -45,6 +46,26 @@ export default function Dashboard() {
   const handleHorarios = (id: string | null) => (event: React.MouseEvent<HTMLButtonElement>): void => {
     route.push(`/horarios/${id}`);
   };
+
+  const handleDeleteClass = (classId: string | null) => async (event: React.MouseEvent<HTMLButtonElement>): Promise<void> => {
+    if (!classId) return;
+
+    try {
+        console.log(classId);
+        const toBeDeletedClass={
+          id:classId
+        }
+      const { data: deleteClass, errors } = await client.models.Class.delete(toBeDeletedClass);
+      console.log("se elimino la clase", deleteClass);
+      if (errors) {
+        console.error("Error deleting class:", errors);
+      } else {
+        //fetchClases(); 
+      }
+    } catch (error) {
+      console.error("Error deleting class:", error);
+    }
+  };
   
 
   return (
@@ -63,10 +84,13 @@ export default function Dashboard() {
               <th scope="col" className="px-6 py-3">
                 Horarios Disponibles
               </th>
+              <th scope="col" className="px-6 py-3">
+                Eliminar Clase
+              </th>
             </tr>
           </thead>
           <tbody>
-            {clases.map(({ classId, className, availableSlots }) => (
+            {clases.map(({ id,classId, className, availableSlots }) => (
               <tr
                 key={classId}
                 className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 rounded-lg"
@@ -76,6 +100,7 @@ export default function Dashboard() {
                 </td>
                 <td className="px-6 py-4">{availableSlots}</td>
                 <td className="px-6 py-4"><button onClick={handleHorarios(classId)} className="button">Horarios</button></td>
+                <td className="px-6 py-4"><button onClick={handleDeleteClass(id)} className="button">Borrar</button></td>
               </tr>
             ))}
           </tbody>

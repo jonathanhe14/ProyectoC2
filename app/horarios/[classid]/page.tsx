@@ -7,16 +7,23 @@ import { useState } from 'react';
 import { Amplify } from "aws-amplify";
 import outputs from "../../../amplify_outputs.json";
 import Router from 'next/router';
+import FormTime from '../../components/FormTime';
 
 Amplify.configure(outputs);
 interface timeSlot {
-  timeSloldId: UUID; 
+  timeSlotId: string | null;
   classId: string | null;
-  time: string | null; 
-  date: string | null; 
+  time: string | null;
+  date: string | null;
   slotsAvailable: number | null;
+  readonly id: string;
+  readonly createdAt: string;
+  readonly updatedAt: string;
 }
 
+interface PageProps {
+  classId: string;
+}
 const client = generateClient<Schema>({
   authMode: "apiKey",
 });
@@ -24,21 +31,28 @@ const client = generateClient<Schema>({
 export default function Horarios({params}:{params: {classid: string}}) {
   const classId = params.classid;
   const [timeSlots, setTimeSlots] = useState<timeSlot[]>([]);
+  const [showForm, setShowForm] = useState(false);
  const route = Router;
+
+
+ const toogleForm = () => {
+  setShowForm(!showForm);
+ };
 
   const fetchTimeSlots = async () => {
     try{
       const { data: items, errors } = await client.models.TimeSlot.list({
         filter: {
           classId: {
-            eq: "0e3c3134-555a-4edd-90a8-1a10544dec80"
+            eq: classId
           }
       }});
       console.log(items);
       if(errors){
         console.error(errors);
       } else {
-        console.log(items);
+
+        setTimeSlots(items);
       }
     }catch(error){
       console.error("Error fetching clases:", error);
@@ -46,7 +60,9 @@ export default function Horarios({params}:{params: {classid: string}}) {
   }
 
   useEffect(() => {
-    fetchTimeSlots();
+    if (classId) {
+      fetchTimeSlots();
+    }
   }, [classId]);
 
   if (!timeSlots) {
@@ -72,9 +88,9 @@ export default function Horarios({params}:{params: {classid: string}}) {
           </tr>
         </thead>
         <tbody>
-          {timeSlots.map(({ timeSloldId,classId, time, date, slotsAvailable }) => (
+          {timeSlots.map(({ timeSlotId,classId, time, date, slotsAvailable }) => (
             <tr
-              key={timeSloldId}
+              key={timeSlotId}
               className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 rounded-lg"
             >
               <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
@@ -88,12 +104,14 @@ export default function Horarios({params}:{params: {classid: string}}) {
       </table>
     </div>
 
-    <button className="button" onClick={() => route.push("/newclass")}>
-      Agregar Horario
+    <button className="button" onClick={toogleForm}>
+      {showForm ? "Ocultar Formulario" : "Agregar Horario"}
+      
     </button>
-    <button className="button" onClick={() => route.push("/dashboard")}>
+          {showForm && <FormTime classId={classId} />}
+    {/* <button className="button" onClick={() => route.push("/dashboard")}>
      Clases
-    </button>
+    </button> */}
   </div>
   )
 }
