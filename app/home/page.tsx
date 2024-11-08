@@ -20,14 +20,7 @@ function page() {
   if (route !== 'authenticated') {
     return <div>Loading...</div>;
   }
-  const handleSignOut = async () => {
-    try {
-      await signOut();
-      router.push('/sign-in');
-    } catch (error) {
-      console.error('Error signing out:', error);
-    }
-  }
+
   const navigateToDashboard  = () => {
     router.push('/dashboard');
   }
@@ -47,7 +40,6 @@ function page() {
   return (
     <div>
       <h1>Este es el Home, {user?.signInDetails?.loginId}</h1>
-      <button onClick={handleSignOut} className='button'>Cerrar sesión</button>
       {isAdmin()}
     </div>
   );

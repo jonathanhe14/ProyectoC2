@@ -9,6 +9,7 @@ import outputs from "../../../amplify_outputs.json";
 import Router from 'next/router';
 import FormTime from '../../components/FormTime';
 import { Input,Label } from '@aws-amplify/ui-react';
+import Header from '@/app/components/Header';
 
 Amplify.configure(outputs);
 interface timeSlot {
@@ -72,6 +73,7 @@ export default function Horarios({params}:{params: {classid: string}}) {
 
   return (
     <>
+    <Header />
 {!showForm ? (
   <div>
     <h1 className="text-3xl font-bold mb-2">Horarios de la clase</h1>

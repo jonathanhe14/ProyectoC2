@@ -30,6 +30,10 @@ export default function HomePage() {
     }
   }
 
+  const handleAdmin = () => {
+    router.push('/dashboard');
+  }
+
   useEffect(() => {
     if (route !== 'authenticated') {
       router.push('/sign-in');
@@ -47,6 +51,7 @@ export default function HomePage() {
     if(user?.signInDetails?.loginId === 'jonaherrera90@hotmail.com'){
       return <div>
         <div>Cargando ...</div>
+        {}
       </div>
     }else{
       return <div>Estoy como usuario normal</div>

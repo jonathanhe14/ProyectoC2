@@ -22,6 +22,8 @@ const client = generateClient<Schema>({
 });
 
 const FormTime: React.FC<ClassData> = ({ classId }) => {
+  const [isLoading, setisLoading] = useState(false);
+  const [isFomrVisible, setIsFormVisible] = useState(false);
   const { tokens } = useTheme();
 
   const router = useRouter();
