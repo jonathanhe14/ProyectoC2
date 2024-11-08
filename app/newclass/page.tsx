@@ -1,10 +1,14 @@
 'use client'
 import React from 'react'
 import FormClass from '../components/FormClass'
+import Header from '../components/Header'
 
 function nuevaclase() {
   return (
-    <div><FormClass></FormClass></div>
+    <div>
+      <Header />
+      <FormClass></FormClass>
+      </div>
   )
 }
 

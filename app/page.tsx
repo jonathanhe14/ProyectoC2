@@ -17,15 +17,24 @@ const client = generateClient<Schema>();
 const adminEmails = ["jonaherrera90@hotmail.com"];
 
 export default function HomePage() {
-  const { user, route } = useAuthenticator((context) => [context.user, context.route]);
+  const { user, route,signOut } = useAuthenticator((context) => [context.user, context.route]);
   const router = useRouter();
 
-  // Si no está autenticado, redirige al usuario a la página de inicio de sesión
+
+  const handleSignOut = async () => {
+    try {
+      await signOut();
+      router.push('/sign-in');
+    } catch (error) {
+      console.error('Error signing out:', error);
+    }
+  }
+
   useEffect(() => {
     if (route !== 'authenticated') {
       router.push('/sign-in');
     } else {
-      router.push('/home');
+      router.push('/dashboard');
     }
   }, [route, router]);
 
@@ -33,9 +42,22 @@ export default function HomePage() {
     return <div>Cargando...</div>;
   }
 
+
+  function isAdmin() {
+    if(user?.signInDetails?.loginId === 'jonaherrera90@hotmail.com'){
+      return <div>
+        <div>Cargando ...</div>
+      </div>
+    }else{
+      return <div>Estoy como usuario normal</div>
+    }
+  }
+
   return (
     <div>
-      Pagina Principal
+      <h1>Este es el Home, {user?.signInDetails?.loginId}</h1>
+      <button onClick={handleSignOut} className='button'>Cerrar sesión</button>
+      {isAdmin()}
     </div>
   );
 }

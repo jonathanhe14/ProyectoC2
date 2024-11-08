@@ -1,12 +1,18 @@
 body {
     margin: 0;
-    background: linear-gradient(rgb(204, 229, 247), rgb(161, 193, 210), rgb(119, 158, 174), rgb(77, 124, 139), rgb(31, 92, 106));
+    /* background: linear-gradient(rgb(204, 229, 247), rgb(161, 193, 210), rgb(119, 158, 174), rgb(77, 124, 139), rgb(31, 92, 106)); */
+    background-color: #0D1A26;
     display: flex;
     font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
     height: 100vh;
     width: 100vw;
     justify-content: center;
     align-items: center;
+    color: white;
+    
+  }
+  input{
+    color: white;
   }
   
   main {
@@ -48,18 +54,21 @@ body {
     background-color: black;
     border-radius: 8px;
     overflow: auto;
+    color: white;
   }
   
   li {
     background-color: white;
     padding: 8px;
+    color: white;
   }
   
   li:hover {
     background: #dadbf9;
   }
+  /* styles.css */
+
   
-  a {
-    font-weight: 800;
-    text-decoration: none;
-  }
+
+
+  

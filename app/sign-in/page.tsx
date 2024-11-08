@@ -12,18 +12,20 @@ export default function SignInPage() {
 
   // Use useEffect to handle redirection after successful authentication
   useEffect(() => {
-    if (route === 'authenticated') {
+    if (route === 'authenticated' && user?.signInDetails?.loginId === 'jonaherrera90@hotmail.com') {
       // Redirect to /home when the user is authenticated
+      router.push('/dashboard');
+    }else if(route === 'authenticated'){
       router.push('/home');
-    }
+    } 
   }, [route, router]);
 
   return (
     <Authenticator>
       {({ signOut, user }) => (
         <div>
-          <h1>Bienvenido, {user?.signInDetails?.loginId}</h1>
-          <button onClick={signOut}>Sign Out</button>
+          {/* <h1>Bienvenido, {user?.signInDetails?.loginId}</h1>
+          <button onClick={signOut}>Sign Out</button> */}
         </div>
       )}
     </Authenticator>

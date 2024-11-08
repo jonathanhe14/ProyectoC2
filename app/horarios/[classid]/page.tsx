@@ -8,6 +8,7 @@ import { Amplify } from "aws-amplify";
 import outputs from "../../../amplify_outputs.json";
 import Router from 'next/router';
 import FormTime from '../../components/FormTime';
+import { Input,Label } from '@aws-amplify/ui-react';
 
 Amplify.configure(outputs);
 interface timeSlot {
@@ -70,25 +71,21 @@ export default function Horarios({params}:{params: {classid: string}}) {
   }
 
   return (
-    <div>
+    <>
+{!showForm ? (
+  <div>
     <h1 className="text-3xl font-bold mb-2">Horarios de la clase</h1>
     <div className="relative overflow-x-auto">
       <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
         <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
           <tr>
-            <th scope="col" className="px-6 py-3">
-              Hora
-            </th>
-            <th scope="col" className="px-6 py-3">
-              Fecha
-            </th>
-            <th scope="col" className="px-6 py-3">
-              Espacios Disponibles
-            </th>
+            <th scope="col" className="px-6 py-3">Hora</th>
+            <th scope="col" className="px-6 py-3">Fecha</th>
+            <th scope="col" className="px-6 py-3">Espacios Disponibles</th>
           </tr>
         </thead>
         <tbody>
-          {timeSlots.map(({ timeSlotId,classId, time, date, slotsAvailable }) => (
+          {timeSlots.map(({ timeSlotId, classId, time, date, slotsAvailable }) => (
             <tr
               key={timeSlotId}
               className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 rounded-lg"
@@ -103,6 +100,9 @@ export default function Horarios({params}:{params: {classid: string}}) {
         </tbody>
       </table>
     </div>
+  </div>
+) : null}
+        
 
     <button className="button" onClick={toogleForm}>
       {showForm ? "Ocultar Formulario" : "Agregar Horario"}
@@ -112,7 +112,8 @@ export default function Horarios({params}:{params: {classid: string}}) {
     {/* <button className="button" onClick={() => route.push("/dashboard")}>
      Clases
     </button> */}
-  </div>
+    </>
+
   )
 }
 

@@ -5,6 +5,7 @@ import { generateClient } from "aws-amplify/data";
 import type { Schema } from "../../amplify/data/resource";
 import { UUID } from "crypto";
 import { useRouter } from "next/navigation";
+import {Input,Label,Flex,useTheme,Theme,Button} from '@aws-amplify/ui-react';
 
 interface ClassData {
   classId: string | null;
@@ -19,12 +20,16 @@ const client = generateClient<Schema>({
 
 const FormClass: React.FC = () => {
 
+  const [isLoading, setisLoading] = useState(false);
+
+  const { tokens } = useTheme();
   const router = useRouter();
   const [classData, setClassData] = useState<ClassData>({
     classId: crypto.randomUUID(),
     className: "",
     availableSlots: 0,
   });
+
 
 
   const handleClassChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -53,6 +58,8 @@ const FormClass: React.FC = () => {
       console.log("Clase creada:", newClass);
     } catch (error) {
       console.error("Error al crear la clase", error);
+    }finally{
+      setisLoading(true);
     }
   };
 
@@ -63,49 +70,42 @@ const FormClass: React.FC = () => {
       <form onSubmit={handleSubmit} className="max-w-sm mx-auto">
         {/* Información de la Clase */}
         <div>
-          <label
-            htmlFor="className"
-            className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-          >
-            Nombre de la Clase:
-          </label>
-          <input
+          <Label htmlFor="className" color={tokens.colors.white}>Nombre de la Clase:</Label>
+          <Input
             type="text"
             id="className"
             name="className"
             value={classData.className}
             onChange={handleClassChange}
             required
-            className="input-field"
           />
         </div>
   
         <br />
         <br />
         <div>
-          <label
+          <Label
             htmlFor="availableSlots"
-            className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+            color={tokens.colors.white}
           >
             Cupos Disponibles:
-          </label>
+          </Label>
   
-          <input
+          <Input
             type="number"
             id="availableSlots"
             name="availableSlots"
             value={classData.availableSlots}
             onChange={handleClassChange}
-            min="1"
-            className="input-field"
             required
+            color={tokens.colors.white}
+            
           />
         </div>
   
         <br />
         <br />
-  
-        <input type="submit" value="Agregar Clase" className="button"/>
+    {isLoading ? <Button type="submit" value="Agregar Clase"isLoading={true} loadingText="Creando" variation="primary" ></Button>:<Button type="submit" value="Agregar Clase" variation="primary" >Agregar Clase</Button>}
       </form>
     </div>
   );
