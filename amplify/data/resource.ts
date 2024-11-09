@@ -3,22 +3,27 @@ import { type ClientSchema, a, defineData } from "@aws-amplify/backend";
 
 const schema = a.schema({
   Class: a.model({
-    classId: a.id(),                 // ID de Clase (PK)
+    classId: a.id().required(),                 // ID de Clase (PK)
     className: a.string(),
-    availableSlots: a.integer(),
+    level: a.string(),
+    description: a.string(),
+    instructor: a.string(),
+    timeSlots: a.hasMany('TimeSlot','classId'),
   }),
   TimeSlot: a.model({
-    timeSlotId: a.id(),              // ID de Horario (PK)
-    classId: a.id(),                 // ID de Clase (FK)
+    timeSlotId: a.id(),              // ID de Horario (PK)                // ID de Clase (FK)
     time: a.string(),
     date: a.string(),                 // Fecha como string
     slotsAvailable: a.integer(),
+    classId: a.id().required(),              // ID de Clase (FK)
+    class: a.belongsTo('Class','classId'), 
+    attendees: a.hasMany('Attendee','timeSlotId')     // Clase a la que pertenece
   }),
   Attendee: a.model({
     attendeeId: a.id(),              // ID de Asistente (PK)
-    classId: a.id(),                 // ID de Clase (FK)
-    userId: a.id(),
+    className:a.string(),               // ID de Clase (FK)
     userName: a.string(),
+    timeSlot: a.belongsTo('TimeSlot','timeSlotId')             // ID de Horario (FK
   })
 }).authorization((allow) => allow.publicApiKey());
 

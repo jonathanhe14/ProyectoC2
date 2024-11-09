@@ -8,137 +8,121 @@ import { useRouter } from "next/navigation";
 import { Input, Label, Flex, Button, useTheme } from "@aws-amplify/ui-react";
 
 interface TimeSlot {
-  time: string;
-  date: string;
-  slotsAvailable: number;
+  id?: string;
+  timeSlotId?: string | null;
+  time?: string | null;
+  date?: string | null;
+  slotsAvailable?: number | null;
+  classId: string | null; // Add this line
 }
 
 interface ClassData {
-  classId: string | null;
+  id: string;
 }
 
 const client = generateClient<Schema>({
   authMode: "apiKey",
 });
 
-const FormTime: React.FC<ClassData> = ({ classId }) => {
-  const [isLoading, setisLoading] = useState(false);
-  const [isFomrVisible, setIsFormVisible] = useState(false);
+const FormTime: React.FC<ClassData> = ({ id }) => {
   const { tokens } = useTheme();
-
   const router = useRouter();
 
-  const [timeSlots, setTimeSlots] = useState<TimeSlot[]>([
-    { time: "", date: "", slotsAvailable: 0 },
-  ]);
+  // Inicializamos `timeSlot` como un solo objeto
+  const [timeSlot, setTimeSlot] = useState<TimeSlot>({
+    time: "",
+    date: "",
+    slotsAvailable: 1,
+    classId: "",
+  });
 
-  const handleTimeSlotChange = (
-    index: number,
-    e: ChangeEvent<HTMLInputElement>
-  ) => {
+  const handleTimeSlotChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
 
-    // Verificamos que el "name" es una clave válida en TimeSlot
-    if (name === "time" || name === "date" || name === "slotsAvailable") {
-      const newTimeSlots = [...timeSlots];
-
-      newTimeSlots[index] = {
-        ...newTimeSlots[index],
-        [name]: name === "slotsAvailable" ? parseInt(value) : value,
-      };
-
-      setTimeSlots(newTimeSlots);
-    }
-  };
-
-  const addTimeSlot = () => {
-    setTimeSlots([...timeSlots, { time: "", date: "", slotsAvailable: 1 }]);
+    setTimeSlot((prevTimeSlot) => ({
+      ...prevTimeSlot,
+      [name]: name === "slotsAvailable" ? parseInt(value) : value,
+    }));
   };
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
 
-    console.log("Horarios:", timeSlots);
+    console.log("Horario:", timeSlot);
     createTimeSlot();
     router.push("/dashboard");
   };
 
-  const createTimeSlot = async () => {
-    try {
-      const newTimeSlots = await client.models.TimeSlot.create({
-        timeSlotId: crypto.randomUUID(),
-        classId: classId,
-        time: timeSlots[0].time,
-        date: timeSlots[0].date,
-        slotsAvailable: timeSlots[0].slotsAvailable,
-      });
-      console.log("Horario creado:", newTimeSlots);
-    } catch (error) {
-      console.error("Error al crear el horario", error);
-    }
-  };
+const createTimeSlot = async () => {
+  try {
+    console.log(id);
+    const { data: newTimeSlot } = await client.models.TimeSlot.create({
+      timeSlotId: crypto.randomUUID(),
+      classId: id, // Ensure this is correctly passed
+      time: timeSlot.time,
+      date: timeSlot.date,
+      slotsAvailable: timeSlot.slotsAvailable,
+    });
+    console.log("Horario creado:", newTimeSlot);
+  } catch (error) {
+    console.error("Error al crear el horario", error);
+  }
+};
 
   return (
     <div>
-      <h2 className="text-3xl font-bold mb-5">Ingresar Clase y Horarios</h2>
+      <h2 className="text-3xl font-bold mb-5">Agrega un nuevo horario</h2>
       <form onSubmit={handleSubmit} className="max-w-sm mx-auto">
-        {/* Campos dinámicos para los horarios */}
+        {/* Campos para el horario */}
 
-        <div>
-          <h3 className="text-xl font-bold mb-4">Horarios:</h3>
-          {timeSlots.map((slot, index) => (
-            <div key={index} className="timeSlot">
-              <Flex direction="column" width="20rem">
-                <Flex direction="column" gap="medium">
-                  <Label
-                    htmlFor="time"
-                    color={tokens.colors.white}
-                    className="mb-5"
-                  >
-                    Horario (ej: 10:00 AM):
-                  </Label>
-                  <Input
-                    type="text"
-                    name="time"
-                    value={slot.time}
-                    onChange={(e) => handleTimeSlotChange(index, e)}
-                    required
-                  />
-                </Flex>
+        <Flex direction="column" width="20rem">
+          <Flex direction="column" gap="medium">
+            <Label htmlFor="time" color={tokens.colors.white}>
+              Horario (ej: 10:00 AM):
+            </Label>
+            <Input
+              type="text"
+              name="time"
+              value={timeSlot.time ?? ""}
+              onChange={handleTimeSlotChange}
+              required
+            />
+          </Flex>
 
-                <Flex direction="column" gap="medium">
-                  <Label htmlFor="date" color={tokens.colors.white}>
-                    Fecha (YYYY-MM-DD):
-                  </Label>
-                  <Input
-                    type="date"
-                    name="date"
-                    value={slot.date}
-                    onChange={(e) => handleTimeSlotChange(index, e)}
-                    required
-                  />
-                </Flex>
-                <Flex direction="column" gap="medium">
-                <Label htmlFor="slotsAvailable" color={tokens.colors.white}>
-                  Cupos Disponibles:
-                </Label>
-                <Input
-                  type="number"
-                  name="slotsAvailable"
-                  value={slot.slotsAvailable}
-                  onChange={(e) => handleTimeSlotChange(index, e)}
-                  required
-                />
-                </Flex>
-                <Button type="submit" value="Agregar Horario" variation="primary"> Agregar Horario</Button>
-              </Flex>
-            </div>
-          ))}
-        </div>
-        
+          <Flex direction="column" gap="medium">
+            <Label htmlFor="date" color={tokens.colors.white}>
+              Fecha (YYYY-MM-DD):
+            </Label>
+            <Input
+              type="date"
+              name="date"
+              value={timeSlot.date ?? ""}
+              onChange={handleTimeSlotChange}
+              required
+            />
+          </Flex>
+
+          <Flex direction="column" gap="medium">
+            <Label htmlFor="slotsAvailable" color={tokens.colors.white}>
+              Cupos Disponibles:
+            </Label>
+            <Input
+              type="number"
+              name="slotsAvailable"
+              value={timeSlot.slotsAvailable ?? ""}
+              onChange={handleTimeSlotChange}
+              required
+            />
+          </Flex>
+
+          <Button type="submit" value="Agregar Horario" variation="primary">
+            Agregar Horario
+          </Button>
+        </Flex>
       </form>
     </div>
   );
 };
 
 export default FormTime;
+

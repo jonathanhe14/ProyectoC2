@@ -8,8 +8,9 @@ import { Amplify } from "aws-amplify";
 import outputs from "../../../amplify_outputs.json";
 import Router from 'next/router';
 import FormTime from '../../components/FormTime';
-import { Input,Label } from '@aws-amplify/ui-react';
+import { Input,Label,Button,Flex } from '@aws-amplify/ui-react';
 import Header from '@/app/components/Header';
+
 
 Amplify.configure(outputs);
 interface timeSlot {
@@ -71,9 +72,33 @@ export default function Horarios({params}:{params: {classid: string}}) {
     return <p>Cargando horarios de la clase...</p>;
   }
 
+
+  const handleDeleteTimeSolt = (timeId: string | null) => {
+    return async (event: React.MouseEvent<HTMLButtonElement>): Promise<void> => {
+      event.preventDefault();
+      if (!timeId) return;
+
+      try {
+        const toBeDeletedTime = { id: timeId };
+        const { data: deleteTime, errors } = await client.models.TimeSlot.delete(
+          toBeDeletedTime
+        );
+        if (errors) {
+          console.error('Error deleting Time:', errors);
+        } else {
+          console.log('Horario eliminado:', deleteTime);
+          fetchTimeSlots();
+        }
+      } catch (error) {
+        console.error('Error deleting Time:', error);
+      }
+    };
+  };
+
   return (
     <>
     <Header />
+    <Flex direction="column">
 {!showForm ? (
   <div>
     <h1 className="text-3xl font-bold mb-2">Horarios de la clase</h1>
@@ -84,19 +109,30 @@ export default function Horarios({params}:{params: {classid: string}}) {
             <th scope="col" className="px-6 py-3">Hora</th>
             <th scope="col" className="px-6 py-3">Fecha</th>
             <th scope="col" className="px-6 py-3">Espacios Disponibles</th>
+            <th scope="col" className="px-6 py-3">
+                    Eliminar
+                  </th>
           </tr>
         </thead>
         <tbody>
-          {timeSlots.map(({ timeSlotId, classId, time, date, slotsAvailable }) => (
+          {timeSlots.map(({ id,timeSlotId, time, date, slotsAvailable }) => (
             <tr
               key={timeSlotId}
               className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 rounded-lg"
             >
-              <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+              <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white text-xl">
                 {time}
               </td>
-              <td className="px-6 py-4">{date}</td>
-              <td className="px-6 py-4">{slotsAvailable}</td>
+              <td className="px-6 py-4 text-xl font-bold">{date}</td>
+              <td className="px-6 py-4 text-xl text-center font-bold">{slotsAvailable}</td>
+              <td className="px-6 py-4">
+                      <Button
+                        onClick={handleDeleteTimeSolt(id)}
+                        variation="link"
+                      >
+                        Borrar
+                      </Button>
+                  </td>
             </tr>
           ))}
         </tbody>
@@ -105,15 +141,16 @@ export default function Horarios({params}:{params: {classid: string}}) {
   </div>
 ) : null}
         
-
-    <button className="button" onClick={toogleForm}>
-      {showForm ? "Ocultar Formulario" : "Agregar Horario"}
+        {showForm && <FormTime id={classId} />}
+    <Button onClick={toogleForm} variation='primary'>
+      {showForm ? "Volver" : "Agregar Horario"}
       
-    </button>
-          {showForm && <FormTime classId={classId} />}
+    </Button>
+         
     {/* <button className="button" onClick={() => route.push("/dashboard")}>
      Clases
     </button> */}
+    </Flex>
     </>
 
   )

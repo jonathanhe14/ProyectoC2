@@ -1,6 +1,6 @@
 "use client";
 import "@aws-amplify/ui-react/styles.css";
-import { Placeholder, Loader, useTheme, Button } from "@aws-amplify/ui-react";
+import { Placeholder, Loader, useTheme, Button,Flex } from "@aws-amplify/ui-react";
 import { Amplify } from "aws-amplify";
 import outputs from "../../amplify_outputs.json";
 import type { Schema } from "../../amplify/data/resource";
@@ -14,8 +14,10 @@ Amplify.configure(outputs);
 interface Class {
   id: string;
   classId: string | null; // Permitir null
-  className: string | null; // Permitir null
-  availableSlots: number | null; // Permitir null
+  className: string | null;
+  level:string|null;
+  description:string|null;
+  instructor:string|null;
 }
 
 const client = generateClient<Schema>({
@@ -34,6 +36,7 @@ export default function Dashboard() {
       if (errors) {
         console.error(errors);
       } else {
+        console.log("Clases:", items);
         setClases(items);
       }
     } catch (error) {
@@ -81,6 +84,7 @@ export default function Dashboard() {
   return (
     <div>
       <Header />
+      <Flex direction="column" gap="1rem">
       <div className="pt-20">
         <h1 className="text-3xl font-bold mb-2">Próximas Clases</h1>
         {isLoaded ? (
@@ -96,11 +100,11 @@ export default function Dashboard() {
             {!isLoaded ? (
               <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                 <tr>
-                  <th scope="col" className="px-6 py-3">
+                  <th scope="col" className="px-6 py-3 ">
                     Nombre de la Clase
                   </th>
                   <th scope="col" className="px-6 py-3">
-                    Cupos Disponibles
+                    Dificultad
                   </th>
                   <th scope="col" className="px-6 py-3">
                     Horarios Disponibles
@@ -113,15 +117,15 @@ export default function Dashboard() {
             ) : null}
 
             <tbody>
-              {clases.map(({ id, classId, className, availableSlots }) => (
+              {clases.map(({ id, classId, className,level }) => (
                 <tr
                   key={classId}
                   className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 rounded-lg"
                 >
-                  <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                  <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white text-xl ">
                     {className}
                   </td>
-                  <td className="px-6 py-4">{availableSlots}</td>
+                  <td className="px-6 py-4 text-xl font-bold text-center" >{level}</td>
                   <td className="px-6 py-4">
                   <Button onClick={handleHorarios(classId)} variation="link">
                         Horarios
@@ -140,14 +144,13 @@ export default function Dashboard() {
             </tbody>
           </table>
         </div>
-
+        </div>
         <Button variation="primary" onClick={() => route.push("/newclass")}>
           Agregar Clase
         </Button>
-        <Button variation="primary" onClick={() => route.push("/home")}>
-          Home
-        </Button>
-      </div>
+        
+
+      </Flex>
     </div>
   );
 }
