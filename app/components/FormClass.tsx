@@ -19,7 +19,7 @@ import {
 } from "@aws-amplify/ui-react";
 
 interface ClassData {
-  classId: string | null;
+  classId: string ;
   className: string;
   instructor: string;
   level: string;
