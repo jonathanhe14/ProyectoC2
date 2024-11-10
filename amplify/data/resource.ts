@@ -23,6 +23,7 @@ const schema = a.schema({
     attendeeId: a.id(),              // ID de Asistente (PK)
     className:a.string(),               // ID de Clase (FK)
     userName: a.string(),
+    timeSlotId: a.id().required(),              // ID de Horario (FK)
     timeSlot: a.belongsTo('TimeSlot','timeSlotId')             // ID de Horario (FK
   })
 }).authorization((allow) => allow.publicApiKey());
