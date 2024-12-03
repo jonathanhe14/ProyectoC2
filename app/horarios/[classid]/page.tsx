@@ -9,6 +9,7 @@ import Router, { useRouter } from 'next/navigation';
 import FormTime from '../../components/FormTime';
 import { Button,Flex,Table,TableBody,TableCell,TableHead,TableRow } from '@aws-amplify/ui-react';
 import Header from '@/app/components/Header';
+import { Alert } from '@aws-amplify/ui-react';
 
 
 Amplify.configure(outputs);
@@ -22,6 +23,7 @@ interface timeSlot {
   readonly createdAt: string;
   readonly updatedAt: string;
 }
+
 
 interface PageProps {
   classId: string;
@@ -94,6 +96,8 @@ export default function Horarios({params}:{params: {classid: string}}) {
     };
   };
 
+
+
   const handleAsistentes = (id: string | null) => {
     return (event: React.MouseEvent<HTMLButtonElement>): void => {
       event.preventDefault();
@@ -115,7 +119,7 @@ export default function Horarios({params}:{params: {classid: string}}) {
         highlightOnHover={true}
         variation="bordered"
       >
-        <TableHead>
+        {timeSlots.length !== 0 ?(        <TableHead>
           <TableRow>
             <TableCell as="th">Hora</TableCell>
             <TableCell as="th">Fecha</TableCell>
@@ -123,7 +127,15 @@ export default function Horarios({params}:{params: {classid: string}}) {
             <TableCell as="th">Eliminar</TableCell>
             <TableCell as="th">Asistentes</TableCell>
           </TableRow>
-      </TableHead>
+      </TableHead>): <Alert
+            variation="info"
+            isDismissible={false}
+            hasIcon={true}
+            heading="No hay horarios "
+            >
+           Agrega nuevos horarios para esta clase
+          </Alert>}
+
       <TableBody>
         {timeSlots.map(({ id,timeSlotId, time, date, slotsAvailable }) => (
           <TableRow key={timeSlotId}>
@@ -161,10 +173,6 @@ export default function Horarios({params}:{params: {classid: string}}) {
       {showForm ? "Volver" : "Agregar Horario"}
       
     </Button>
-         
-    {/* <button className="button" onClick={() => route.push("/dashboard")}>
-     Clases
-    </button> */}
     </Flex>
     </>
 

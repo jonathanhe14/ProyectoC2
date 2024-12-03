@@ -9,7 +9,8 @@ import outputs from "../../amplify_outputs.json";
 import { generateClient } from "aws-amplify/data";
 import { Schema } from "../../amplify/data/resource";
 import { NewCard } from "../components/NewCard";
-import { For, Stack, StackSeparator } from "@chakra-ui/react";
+import { Stack } from "@chakra-ui/react";
+import { Alert } from "@aws-amplify/ui-react";
 
 Amplify.configure(outputs);
 
@@ -32,11 +33,11 @@ interface TimeSlot {
   time?: string | null;
   date?: string | null;
   slotsAvailable?: number | null;
-  classId: string; // Add this line
+  classId: string; 
 }
 interface Class {
   id: string;
-  classId: string; // Permitir null
+  classId: string; 
   className: string | null;
   level: string | null;
   description: string | null;
@@ -65,42 +66,37 @@ function page() {
     fetchTimeSlots();
   }, [route, router]);
 
-  // Solo llamar a createCard cuando los datos estén completamente cargados
   useEffect(() => {
     if (classData.length > 0 && timeSlots.length > 0) {
-      createCard(); // Ahora solo se llama aquí, una vez que los datos están cargados
-      setShowCards(true); // Marcamos que los datos están listos para ser mostrados
+      createCard();
     }
-  }, [classData, timeSlots]); // Este useEffect depende solo de classData y timeSlots
+    setShowCards(true);
+  }, [classData, timeSlots]);
 
   const createCard = () => {
     let newCards: Card[] = [];
-    const timeSlotMap: { [key: string]: TimeSlot[] } = {}; // Cambiamos el mapa a un arreglo de TimeSlot por classId
+    const timeSlotMap: { [key: string]: TimeSlot[] } = {};
 
-    // Llenamos el mapa de timeSlots con arrays para cada classId
     for (let i = 0; i < timeSlots.length; i++) {
       if (timeSlots[i].classId != null) {
-        // Si no existe el array para este classId, lo creamos
         if (!timeSlotMap[timeSlots[i].classId]) {
           timeSlotMap[timeSlots[i].classId] = [];
         }
-        // Agregamos el TimeSlot al array correspondiente
+
         timeSlotMap[timeSlots[i].classId].push(timeSlots[i]);
       }
     }
 
-    // Ahora iteramos sobre classData y para cada classId encontramos los TimeSlots correspondientes
     for (let i = 0; i < classData.length; i++) {
       const timeSlotsForClass = timeSlotMap[classData[i].classId];
       if (timeSlotsForClass) {
-        // Si existen TimeSlots para esta clase, iteramos sobre ellos
         for (let j = 0; j < timeSlotsForClass.length; j++) {
           const timeSlot = timeSlotsForClass[j];
           newCards.push({
             level: classData[i].level,
             className: classData[i].className,
-            time: timeSlot.time ?? null, // Usamos null si es undefined
-            date: timeSlot.date ?? null, // Usamos null si es undefined
+            time: timeSlot.time ?? null,
+            date: timeSlot.date ?? null,
             description: classData[i].description,
             instructor: classData[i].instructor,
             slotsAvailable: timeSlot.slotsAvailable ?? null,
@@ -111,8 +107,7 @@ function page() {
       }
     }
 
-    // Actualizamos el estado solo una vez
-    setCard(newCards); // Ahora solo reemplazamos el estado, no agregamos más
+    setCard(newCards);
     console.log("Cards:", newCards);
   };
 
@@ -158,7 +153,7 @@ function page() {
           gap="4"
           direction="row"
           wrap="wrap"
-          className="p-10 justify-center"
+          className="p-5 justify-center"
         >
           {showCards ? (
             card.map(
@@ -185,12 +180,21 @@ function page() {
                   timeSlotId={timeSlotId}
                   classId={classId}
                   tipo="1"
-                  
                 />
               )
             )
           ) : (
             <p>Cargando...</p>
+          )}
+          {card.length === 0 && (
+            <Alert
+              variation="info"
+              isDismissible={false}
+              hasIcon={true}
+              heading="No hay clases disponibles"
+            >
+              Actualmete no hay clases disponibles, pronto agregaremos más
+            </Alert>
           )}
         </Stack>
       </div>

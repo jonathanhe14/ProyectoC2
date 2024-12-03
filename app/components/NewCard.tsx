@@ -96,7 +96,7 @@ export const NewCard: React.FC<ClasscardProps> = ({
     attendeeId: attendeeData.attendeeId,
     id: id,
   });
-
+ 
   const createMyClass = async () => {
     const timeSlot = {
       id: timeSlotId || "",
@@ -106,7 +106,6 @@ export const NewCard: React.FC<ClasscardProps> = ({
       slotsAvailable: (slotsAvailable ?? 0) - 1,
       classId: classId,
     };
-    console.log("TimeSlot Actualizado", timeSlot);
     try {
       const { data: updateTimeSlot, errors } =
         await client.models.TimeSlot.update(timeSlot);
@@ -130,9 +129,9 @@ export const NewCard: React.FC<ClasscardProps> = ({
         timeSlotId: timeSlotId,
         attendeeId: idAttendee,
       });
-      console.log("Clase creada", myClass);
       setAlertMessage("Te has inscrito a la clase");
       setAlertHeading("Inscripción exitosa");
+      
     } catch (error) {
       console.error("Error creando la clase:", error);
     }
@@ -209,7 +208,7 @@ export const NewCard: React.FC<ClasscardProps> = ({
 
   return (
     <DialogRoot>
-      <div className="p-6 bg-white border border-gray-200 rounded-lg shadow w-[500px] mb-5 hover:bg-gray-200 transition-colors duration-300 flex justify-between">
+      <div className="p-6 bg-white border border-gray-200 rounded-lg shadow w-[600px] mb-5 hover:bg-gray-200 transition-colors duration-300 flex justify-between ">
         {/* Contenido en el lado izquierdo */}
         <div>
           <a href="#">
@@ -221,7 +220,7 @@ export const NewCard: React.FC<ClasscardProps> = ({
             {description}
           </p>
           <p className="text-gray-700 text-xs"> Fecha: {date}</p>
-          <p className="text-gray-700 text-xs">Hora: {time}</p>
+          <p className="text-gray-700 text-xs mb-5">Hora: {time}</p>
           <DialogTrigger asChild>
             <Button className="mt-10" colorTheme="info">
               Detalles
@@ -229,7 +228,7 @@ export const NewCard: React.FC<ClasscardProps> = ({
           </DialogTrigger>
         </div>
 
-        {/* Imagen en el lado derecho */}
+
         <div className="flex-shrink-0 ml-4">
           <img
             src="https://picsum.photos/300/300"
@@ -260,7 +259,7 @@ export const NewCard: React.FC<ClasscardProps> = ({
               Fecha y Hora:
             </h3>
             <p className="text-lg text-gray-700 mb-3 ml-1">
-              {time} - {date}
+              {date} - {time}
             </p>
 
             <h3 className="text-xl text-gray-700 font-semibold">Nivel:</h3>

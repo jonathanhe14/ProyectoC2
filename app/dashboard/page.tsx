@@ -8,7 +8,7 @@ import { generateClient } from "aws-amplify/data";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Header from "../components/Header";
-import { MdDeleteForever } from "react-icons/md";
+import { Alert } from "@aws-amplify/ui-react";
 
 Amplify.configure(outputs);
 interface Class {
@@ -42,7 +42,7 @@ export default function Dashboard() {
     } catch (error) {
       console.error("Error fetching clases:", error);
     } finally {
-      setIsLoaded(false); // Detener el loader después de la carga
+      setIsLoaded(false); 
     }
   };
 
@@ -53,7 +53,6 @@ export default function Dashboard() {
   const handleHorarios = (id: string | null) => {
     return (event: React.MouseEvent<HTMLButtonElement>): void => {
       event.preventDefault();
-      console.log('Hola');
       route.push(`/horarios/${id}`);
     };
   };
@@ -64,19 +63,18 @@ export default function Dashboard() {
       if (!classId) return;
 
       try {
-        console.log(classId);
         const toBeDeletedClass = { id: classId };
         const { data: deleteClass, errors } = await client.models.Class.delete(
           toBeDeletedClass
         );
         if (errors) {
-          console.error('Error deleting class:', errors);
+          console.error('Error eliminando la clase:', errors);
         } else {
           console.log('Clase eliminada:', deleteClass);
-          fetchClases(); // Volver a cargar las clases después de eliminar
+          fetchClases(); 
         }
       } catch (error) {
-        console.error('Error deleting class:', error);
+        console.error('Error eliminando la clase', error);
       }
     };
   };
@@ -103,7 +101,7 @@ export default function Dashboard() {
           highlightOnHover={true}
           variation="bordered"
           >
-            {!isLoaded ? (
+            {!isLoaded && clases.length !== 0 ?  (
               <TableHead>
                 <TableRow>
                   <TableCell as="th">Nombre de la Clase</TableCell>
@@ -113,7 +111,14 @@ export default function Dashboard() {
                   <TableCell as="th">Eliminar </TableCell>
                 </TableRow>
               </TableHead>
-            ) : null}
+            ) : <Alert
+            variation="info"
+            isDismissible={false}
+            hasIcon={true}
+            heading="No hay clases disponibles"
+            >
+            Agrega una nueva clase
+          </Alert>}
             <TableBody>
               {clases.map(({ id, classId, className,level,instructor }) => (
                 <TableRow key={classId}>
@@ -141,6 +146,7 @@ export default function Dashboard() {
           </Table>
         </div>
         </div>
+
         <Button variation="primary" onClick={() => route.push("/newclass")}>
           Agregar Clase
         </Button>

@@ -98,7 +98,7 @@ export default function SignInPage() {
               size="small"
               variation="link"
             >
-              Recuperar Constrasenna 
+              Recuperar Contraseña 
             </Button>
           </View>
         );
@@ -129,7 +129,7 @@ export default function SignInPage() {
               size="small"
               variation="link"
             >
-              Back to Sign In
+              Volver a Iniciar Sesión
             </Button>
           </View>
         );

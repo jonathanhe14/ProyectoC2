@@ -1,16 +1,9 @@
 "use client"
 import {
   Card,
-  View,
-  Heading,
-  Flex,
-  Badge,
-  Text,
-  Button,
   useTheme,
   Theme,
   defaultDarkModeOverride,
-  ThemeProvider,
 } from "@aws-amplify/ui-react";
 import { useAuthenticator } from '@aws-amplify/ui-react';
 import { useEffect,useState } from 'react';
@@ -22,6 +15,8 @@ import { generateClient } from 'aws-amplify/data';
 import { Schema } from '../../amplify/data/resource';
 import "@aws-amplify/ui-react/styles.css";
 import { NewCard } from '../components/NewCard';
+import { Stack } from '@chakra-ui/react';
+import { Alert } from '@aws-amplify/ui-react';
 
 
 Amplify.configure(outputs);
@@ -88,8 +83,9 @@ function Page() {
         id: id || '',
       }));
       setCard(formattedCards);
-      setShowCards(true);
+      
     }
+    setShowCards(true);
   }, [myClassData]);
 
   const fetchMyClass = async () => {
@@ -122,10 +118,16 @@ function Page() {
         <h2 className="text-3xl text-black font-bold text-center mb-4">
           Mis clases
         </h2>
+        <Stack
+          gap="4"
+          direction="row"
+          wrap="wrap"
+          className="p-5 justify-center"
+        >
       {showCards ? (
         card.map(({ className, level, description, instructor, time, date,attendeeId,id}) => (
           <NewCard
-          key={className} // Siempre es buena práctica poner una "key" única
+          key={id} 
           className={className}
           level={level}
           description={description}
@@ -142,6 +144,15 @@ function Page() {
       ) : (
         <p>Cargando...</p>
       )}
+      {card.length === 0 && <Alert
+  variation="info"
+  isDismissible={false}
+  hasIcon={true}
+  heading="No tienes clases inscritas"
+  >
+  Actualmete no te has inscrito a ninguna clase
+</Alert>}
+            </Stack>
     </div>
     </div>
   );
