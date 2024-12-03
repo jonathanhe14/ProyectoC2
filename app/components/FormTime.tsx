@@ -1,11 +1,9 @@
 "use client";
-import { time } from "console";
 import React, { useState, ChangeEvent, FormEvent } from "react";
 import { generateClient } from "aws-amplify/data";
 import type { Schema } from "../../amplify/data/resource";
-import { UUID } from "crypto";
 import { useRouter } from "next/navigation";
-import { Input, Label, Flex, Button, useTheme } from "@aws-amplify/ui-react";
+import { Input, Label, Flex, Button, useTheme,ThemeProvider,Theme,defaultDarkModeOverride } from "@aws-amplify/ui-react";
 
 interface TimeSlot {
   id?: string;
@@ -69,15 +67,23 @@ const createTimeSlot = async () => {
   }
 };
 
+const theme: Theme = {
+  name: 'Auth Example Theme',
+  overrides: [defaultDarkModeOverride],
+};
+
+
   return (
-    <div>
-      <h2 className="text-3xl font-bold mb-5">Agrega un nuevo horario</h2>
+    <ThemeProvider theme={theme}colorMode="light">
+            <h2 className="text-3xl font-bold mb-5 text-black">Agrega un nuevo horario</h2>
+    <div  className="max-w-lg p-8 bg-white border border-gray-200 rounded-lg shadow dark:bg-slate-50 dark:border-slate-100 mx-auto">
+
       <form onSubmit={handleSubmit} className="max-w-sm mx-auto">
         {/* Campos para el horario */}
 
         <Flex direction="column" width="20rem">
           <Flex direction="column" gap="medium">
-            <Label htmlFor="time" color={tokens.colors.white}>
+            <Label htmlFor="time">
               Horario (ej: 10:00 AM):
             </Label>
             <Input
@@ -90,7 +96,7 @@ const createTimeSlot = async () => {
           </Flex>
 
           <Flex direction="column" gap="medium">
-            <Label htmlFor="date" color={tokens.colors.white}>
+            <Label htmlFor="date" >
               Fecha (YYYY-MM-DD):
             </Label>
             <Input
@@ -103,7 +109,7 @@ const createTimeSlot = async () => {
           </Flex>
 
           <Flex direction="column" gap="medium">
-            <Label htmlFor="slotsAvailable" color={tokens.colors.white}>
+            <Label htmlFor="slotsAvailable" >
               Cupos Disponibles:
             </Label>
             <Input
@@ -121,6 +127,7 @@ const createTimeSlot = async () => {
         </Flex>
       </form>
     </div>
+    </ThemeProvider>
   );
 };
 

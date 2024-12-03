@@ -1,9 +1,9 @@
 "use client";
-import { time } from "console";
-import React, { useState, ChangeEvent, FormEvent } from "react";
+
+import React, { useState, FormEvent } from "react";
 import { generateClient } from "aws-amplify/data";
 import type { Schema } from "../../amplify/data/resource";
-import { UUID } from "crypto";
+
 import { useRouter } from "next/navigation";
 import {
   Input,
@@ -81,14 +81,14 @@ const FormClass: React.FC = () => {
   };
 
   return (
-    <ThemeProvider theme={theme} colorMode="dark">
-    <div>
-      <h2 className="text-3xl font-bold mb-5">Ingresar Clase y Horarios</h2>
+    <ThemeProvider theme={theme} colorMode="light">
+    <div  className="max-w-lg p-8 bg-white border border-gray-200 rounded-lg shadow dark:bg-slate-50 dark:border-slate-100 mx-auto">
+      <h2 className="text-3xl font-bold mb-5 text-black" >Ingresar Clase y Horarios</h2>
       <form onSubmit={handleSubmit} className="max-w-sm mx-auto">
         {/* Información de la Clase */}
         <Flex direction="column" gap='2rem'>
         <Flex direction="column">
-          <Label htmlFor="className" color={tokens.colors.white}>
+          <Label htmlFor="className" >
             Nombre de la Clase:
           </Label>
           <Input
@@ -102,7 +102,7 @@ const FormClass: React.FC = () => {
         </Flex>
 
         <Flex direction="column">
-          <Label htmlFor="instructor" color={tokens.colors.white}>
+          <Label htmlFor="instructor" >
             Instructor
           </Label>
 
@@ -113,7 +113,6 @@ const FormClass: React.FC = () => {
             value={classData.instructor}
             onChange={handleClassChange}
             required
-            color={tokens.colors.white}
           />
         </Flex>
 

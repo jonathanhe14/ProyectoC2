@@ -1,14 +1,14 @@
 "use client";
 import "@aws-amplify/ui-react/styles.css";
-import { Placeholder, Loader, useTheme, Button,Flex } from "@aws-amplify/ui-react";
+import {  Loader, useTheme, Button,Flex,Table,TableBody,TableCell,TableHead,TableRow, Badge } from "@aws-amplify/ui-react";
 import { Amplify } from "aws-amplify";
 import outputs from "../../amplify_outputs.json";
 import type { Schema } from "../../amplify/data/resource";
 import { generateClient } from "aws-amplify/data";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import FormClass from "../components/FormClass";
 import Header from "../components/Header";
+import { MdDeleteForever } from "react-icons/md";
 
 Amplify.configure(outputs);
 interface Class {
@@ -84,9 +84,12 @@ export default function Dashboard() {
   return (
     <div>
       <Header />
-      <Flex direction="column" gap="1rem">
-      <div className="pt-20">
-        <h1 className="text-3xl font-bold mb-2">Próximas Clases</h1>
+
+      <Flex direction="column" >
+      <h2 className="text-3xl text-black font-bold text-center ">
+          Clases
+        </h2>
+      <div >
         {isLoaded ? (
           <Loader
             variation="linear"
@@ -96,53 +99,46 @@ export default function Dashboard() {
         ) : null}
 
         <div className="relative overflow-x-auto">
-          <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+          <Table
+          highlightOnHover={true}
+          variation="bordered"
+          >
             {!isLoaded ? (
-              <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
-                <tr>
-                  <th scope="col" className="px-6 py-3 ">
-                    Nombre de la Clase
-                  </th>
-                  <th scope="col" className="px-6 py-3">
-                    Dificultad
-                  </th>
-                  <th scope="col" className="px-6 py-3">
-                    Horarios Disponibles
-                  </th>
-                  <th scope="col" className="px-6 py-3">
-                    Eliminar Clase
-                  </th>
-                </tr>
-              </thead>
+              <TableHead>
+                <TableRow>
+                  <TableCell as="th">Nombre de la Clase</TableCell>
+                  <TableCell as="th">Dificultad</TableCell>
+                  <TableCell as="th">Instructor</TableCell>
+                  <TableCell as="th">Horarios Disponibles</TableCell>
+                  <TableCell as="th">Eliminar </TableCell>
+                </TableRow>
+              </TableHead>
             ) : null}
+            <TableBody>
+              {clases.map(({ id, classId, className,level,instructor }) => (
+                <TableRow key={classId}>
+                  <TableCell>{className}</TableCell>
+                  <TableCell>{level ==="Dificil" ? <Badge  variation="error">Dificil</Badge>: level==="Intermedio" ?<Badge variation="warning">Intermedio</Badge>: <Badge variation="success">Facil</Badge>}</TableCell>
+                  <TableCell>{instructor}</TableCell>
+                  <TableCell>
+                    <Button onClick={handleHorarios(classId)} variation="link">
+                      Horarios
+                    </Button>
+                  </TableCell>
+                  <TableCell>
 
-            <tbody>
-              {clases.map(({ id, classId, className,level }) => (
-                <tr
-                  key={classId}
-                  className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 rounded-lg"
-                >
-                  <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white text-xl ">
-                    {className}
-                  </td>
-                  <td className="px-6 py-4 text-xl font-bold text-center" >{level}</td>
-                  <td className="px-6 py-4">
-                  <Button onClick={handleHorarios(classId)} variation="link">
-                        Horarios
-                      </Button>
-                    </td>
-                    <td className="px-6 py-4">
-                      <Button
-                        onClick={handleDeleteClass(id)}
-                        variation="link"
-                      >
-                        Borrar
-                      </Button>
-                  </td>
-                </tr>
+                    <Button
+                      onClick={handleDeleteClass(id)}
+                      colorTheme="error"
+                      variation="link"
+                    >
+                      Borrar
+                    </Button>
+                  </TableCell>
+                </TableRow>
               ))}
-            </tbody>
-          </table>
+            </TableBody>
+          </Table>
         </div>
         </div>
         <Button variation="primary" onClick={() => route.push("/newclass")}>

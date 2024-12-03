@@ -1,14 +1,13 @@
 'use client';
-import { UUID } from 'crypto';
 import React, { useEffect } from 'react'
 import { generateClient } from "aws-amplify/data";
 import type { Schema } from "../../../amplify/data/resource";
 import { useState } from 'react';
 import { Amplify } from "aws-amplify";
 import outputs from "../../../amplify_outputs.json";
-import Router from 'next/router';
+import Router, { useRouter } from 'next/navigation';
 import FormTime from '../../components/FormTime';
-import { Input,Label,Button,Flex } from '@aws-amplify/ui-react';
+import { Button,Flex,Table,TableBody,TableCell,TableHead,TableRow } from '@aws-amplify/ui-react';
 import Header from '@/app/components/Header';
 
 
@@ -35,7 +34,7 @@ export default function Horarios({params}:{params: {classid: string}}) {
   const classId = params.classid;
   const [timeSlots, setTimeSlots] = useState<timeSlot[]>([]);
   const [showForm, setShowForm] = useState(false);
- const route = Router;
+  const route = useRouter();
 
 
  const toogleForm = () => {
@@ -95,48 +94,64 @@ export default function Horarios({params}:{params: {classid: string}}) {
     };
   };
 
+  const handleAsistentes = (id: string | null) => {
+    return (event: React.MouseEvent<HTMLButtonElement>): void => {
+      event.preventDefault();
+      route.push(`/asistentes/${id}`);
+    };
+  };
+
   return (
     <>
     <Header />
     <Flex direction="column">
+    <h2 className="text-3xl text-black font-bold text-center ">
+          Horarios
+        </h2>
 {!showForm ? (
   <div>
-    <h1 className="text-3xl font-bold mb-2">Horarios de la clase</h1>
     <div className="relative overflow-x-auto">
-      <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
-        <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
-          <tr>
-            <th scope="col" className="px-6 py-3">Hora</th>
-            <th scope="col" className="px-6 py-3">Fecha</th>
-            <th scope="col" className="px-6 py-3">Espacios Disponibles</th>
-            <th scope="col" className="px-6 py-3">
-                    Eliminar
-                  </th>
-          </tr>
-        </thead>
-        <tbody>
-          {timeSlots.map(({ id,timeSlotId, time, date, slotsAvailable }) => (
-            <tr
-              key={timeSlotId}
-              className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 rounded-lg"
-            >
-              <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white text-xl">
-                {time}
-              </td>
-              <td className="px-6 py-4 text-xl font-bold">{date}</td>
-              <td className="px-6 py-4 text-xl text-center font-bold">{slotsAvailable}</td>
-              <td className="px-6 py-4">
-                      <Button
-                        onClick={handleDeleteTimeSolt(id)}
-                        variation="link"
-                      >
-                        Borrar
-                      </Button>
-                  </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      <Table
+        highlightOnHover={true}
+        variation="bordered"
+      >
+        <TableHead>
+          <TableRow>
+            <TableCell as="th">Hora</TableCell>
+            <TableCell as="th">Fecha</TableCell>
+            <TableCell as="th">Campos</TableCell>
+            <TableCell as="th">Eliminar</TableCell>
+            <TableCell as="th">Asistentes</TableCell>
+          </TableRow>
+      </TableHead>
+      <TableBody>
+        {timeSlots.map(({ id,timeSlotId, time, date, slotsAvailable }) => (
+          <TableRow key={timeSlotId}>
+            <TableCell>{time}</TableCell>
+            <TableCell>{date}</TableCell>
+            <TableCell>{slotsAvailable}</TableCell>
+            <TableCell>
+              <Button
+                onClick={handleDeleteTimeSolt(id)}
+                variation="link"
+              >
+                Borrar
+              </Button>
+
+            </TableCell>
+            <TableCell>
+              <Button
+                onClick={handleAsistentes(id)}
+                variation="link"
+              >
+                Asistentes
+              </Button>
+              </TableCell>
+          </TableRow>
+
+        ))}
+        </TableBody>
+      </Table>
     </div>
   </div>
 ) : null}
@@ -155,4 +170,5 @@ export default function Horarios({params}:{params: {classid: string}}) {
 
   )
 }
+
 

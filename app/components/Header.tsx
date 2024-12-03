@@ -2,9 +2,9 @@
 // components/Header.tsx
 import Link from "next/link";
 import { useState } from "react";
-import { signOut } from "aws-amplify/auth";
 import { useRouter } from "next/navigation";
 import { useAuthenticator } from "@aws-amplify/ui-react";
+import { Button } from "@aws-amplify/ui-react";
 
 const Header = () => {
   const { user, signOut } = useAuthenticator((context) => [
@@ -24,28 +24,33 @@ const Header = () => {
       console.error("Error signing out:", error);
     }
   };
+  const handleClick =()=>{
+    router.push("/home")
+  }
 
   return (
-    <header className="fixed top-0 left-0 w-full z-50 bg-gray-900 p-4 shadow-md">
+    <header className="fixed top-0 left-0 w-full z-50 bg-white p-4 shadow-md">
       <div className="container mx-auto flex justify-between items-center">
-        <h1 className="text-2xl font-bold text-white">FitNation </h1>
+        <h1 className="text-2xl font-bold text-black" onClick={handleClick}>FitNation </h1>
 
         <nav className="flex items-center space-x-6">
           {user?.signInDetails?.loginId === "jonaherrera90@hotmail.com" ? (
             <Link
               href="/dashboard"
-              className="text-white hover:text-gray-400 transition duration-300"
+              className="text-black hover:text-gray-400 transition duration-300"
             >
               Clases
             </Link>
-          ) : null}
+          ) : <Link
+          href="/myclasses"
+          className="text-black hover:text-gray-400 transition duration-300"
+        >
+          Mis clases
+        </Link>}
 
-          <button
-            className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-md transition duration-300"
-            onClick={handleSignOut}
-          >
-            Sign Out
-          </button>
+          <Button variation="link" colorTheme="error" onClick={handleSignOut}>
+          Sign Out
+          </Button>
 
           <div className="flex items-center space-x-3">
             <img
@@ -53,7 +58,7 @@ const Header = () => {
               alt="Avatar"
               className="w-10 h-10 rounded-full border-2 border-gray-500"
             />
-            <span className="text-white font-medium">
+            <span className="text-black font-medium">
               {username === "jonaherrera90@hotmail.com" ? "Admin" : username}
             </span>
           </div>

@@ -1,17 +1,15 @@
-"use client"
+"use client";
 
-import { useAuthenticator } from '@aws-amplify/ui-react';
-import { useEffect,useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { singletonEventRole } from 'aws-cdk-lib/aws-events-targets';
-import { signOut } from 'aws-amplify/auth';
-import Header from '@/app/components/Header';
-import { Classcard } from '../components/Classcard';
-import {Amplify} from 'aws-amplify';
+import { useAuthenticator } from "@aws-amplify/ui-react";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import Header from "@/app/components/Header";
+import { Amplify } from "aws-amplify";
 import outputs from "../../amplify_outputs.json";
-import { generateClient } from 'aws-amplify/data';
-import { Schema } from '../../amplify/data/resource';
-
+import { generateClient } from "aws-amplify/data";
+import { Schema } from "../../amplify/data/resource";
+import { NewCard } from "../components/NewCard";
+import { For, Stack, StackSeparator } from "@chakra-ui/react";
 
 Amplify.configure(outputs);
 
@@ -23,6 +21,9 @@ interface Card {
   description: string | null;
   instructor: string | null;
   slotsAvailable: number | null;
+  timeSlotId: string | undefined;
+  classId: string | undefined;
+  attendeeId?: string | undefined;
 }
 
 interface TimeSlot {
@@ -31,26 +32,25 @@ interface TimeSlot {
   time?: string | null;
   date?: string | null;
   slotsAvailable?: number | null;
-  classId: string ; // Add this line
+  classId: string; // Add this line
 }
 interface Class {
   id: string;
   classId: string; // Permitir null
   className: string | null;
-  level:string|null;
-  description:string|null;
-  instructor:string|null;
+  level: string | null;
+  description: string | null;
+  instructor: string | null;
 }
 const client = generateClient<Schema>({
   authMode: "apiKey",
 });
 
-
-
-
-
 function page() {
-  const { user, route, signOut } = useAuthenticator((context) => [context.user, context.route]);
+  const { user, route, signOut } = useAuthenticator((context) => [
+    context.user,
+    context.route,
+  ]);
   const router = useRouter();
   const [card, setCard] = useState<Card[]>([]);
   const [timeSlots, setTimeSlots] = useState<TimeSlot[]>([]);
@@ -58,8 +58,8 @@ function page() {
   const [showCards, setShowCards] = useState(false);
 
   useEffect(() => {
-    if (route !== 'authenticated') {
-      router.push('/sign-in');
+    if (route !== "authenticated") {
+      router.push("/sign-in");
     }
     fetchClass();
     fetchTimeSlots();
@@ -76,7 +76,7 @@ function page() {
   const createCard = () => {
     let newCards: Card[] = [];
     const timeSlotMap: { [key: string]: TimeSlot[] } = {}; // Cambiamos el mapa a un arreglo de TimeSlot por classId
-  
+
     // Llenamos el mapa de timeSlots con arrays para cada classId
     for (let i = 0; i < timeSlots.length; i++) {
       if (timeSlots[i].classId != null) {
@@ -88,7 +88,7 @@ function page() {
         timeSlotMap[timeSlots[i].classId].push(timeSlots[i]);
       }
     }
-  
+
     // Ahora iteramos sobre classData y para cada classId encontramos los TimeSlots correspondientes
     for (let i = 0; i < classData.length; i++) {
       const timeSlotsForClass = timeSlotMap[classData[i].classId];
@@ -99,21 +99,22 @@ function page() {
           newCards.push({
             level: classData[i].level,
             className: classData[i].className,
-            time: timeSlot.time ?? null,  // Usamos null si es undefined
-            date: timeSlot.date ?? null,  // Usamos null si es undefined
+            time: timeSlot.time ?? null, // Usamos null si es undefined
+            date: timeSlot.date ?? null, // Usamos null si es undefined
             description: classData[i].description,
             instructor: classData[i].instructor,
-            slotsAvailable: timeSlot.slotsAvailable ?? null,  // Usamos null si es undefined
+            slotsAvailable: timeSlot.slotsAvailable ?? null,
+            timeSlotId: timeSlot.id,
+            classId: timeSlot.classId,
           });
         }
       }
     }
-  
+
     // Actualizamos el estado solo una vez
     setCard(newCards); // Ahora solo reemplazamos el estado, no agregamos más
     console.log("Cards:", newCards);
   };
-  
 
   const fetchClass = async () => {
     try {
@@ -126,7 +127,7 @@ function page() {
     } catch (error) {
       console.error("Error fetching clases:", error);
     }
-  }
+  };
 
   const fetchTimeSlots = async () => {
     try {
@@ -140,26 +141,59 @@ function page() {
     } catch (error) {
       console.error("Error fetching clases:", error);
     }
-  }
+  };
 
-  if (route !== 'authenticated') {
+  if (route !== "authenticated") {
     return <div>Loading...</div>;
   }
 
   return (
     <div>
       <Header />
-      {showCards ? card.map(({ className, level, description, instructor, time, date }) => (
-        <Classcard
-          key={className} // Siempre es buena práctica poner una "key" única
-          className={className}
-          level={level}
-          description={description}
-          instructor={instructor}
-          time={time}
-          date={date}
-        />
-      )) : <p>Cargando...</p>}
+      <div className="w-4/5 mx-auto">
+        <h2 className="text-3xl text-black font-bold text-center mb-6">
+          Clases disponibles
+        </h2>
+        <Stack
+          gap="4"
+          direction="row"
+          wrap="wrap"
+          className="p-10 justify-center"
+        >
+          {showCards ? (
+            card.map(
+              ({
+                className,
+                level,
+                description,
+                instructor,
+                time,
+                date,
+                slotsAvailable,
+                timeSlotId,
+                classId,
+              }) => (
+                <NewCard
+                  className={className}
+                  level={level}
+                  description={description}
+                  instructor={instructor}
+                  time={time}
+                  date={date}
+                  slotsAvailable={slotsAvailable}
+                  userName={user.signInDetails?.loginId}
+                  timeSlotId={timeSlotId}
+                  classId={classId}
+                  tipo="1"
+                  
+                />
+              )
+            )
+          ) : (
+            <p>Cargando...</p>
+          )}
+        </Stack>
+      </div>
     </div>
   );
 }
