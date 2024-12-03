@@ -6,9 +6,7 @@ import { useState } from "react";
 import { Amplify } from "aws-amplify";
 import outputs from "../../../amplify_outputs.json";
 import Router from "next/router";
-import FormTime from "../../components/FormTime";
 import {
-  Button,
   Flex,
   Table,
   TableBody,
