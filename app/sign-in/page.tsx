@@ -6,7 +6,10 @@ import {
   Authenticator,
   translations,
   useAuthenticator,
-  View,Image,Heading,Text,Button
+  View,
+  Heading,
+  Text,
+  Button,
 } from "@aws-amplify/ui-react";
 import "@aws-amplify/ui-react/styles.css";
 import { Amplify } from "aws-amplify";
@@ -19,6 +22,7 @@ import {
   ColorMode,
 } from "@aws-amplify/ui-react";
 import { I18n } from "aws-amplify/utils";
+import Image from "next/image";
 I18n.putVocabularies(translations);
 I18n.setLanguage("es");
 
@@ -51,20 +55,20 @@ export default function SignInPage() {
   const components = {
     Header() {
       const { tokens } = useTheme();
-  
+
       return (
-        <View textAlign="center" padding={tokens.space.large}>
-          <Image
-            alt="Amplify logo"
-            src="https://docs.amplify.aws/assets/logo-dark.svg"
-          />
+        <View textAlign="center" padding={tokens.space.large} className="justify-center">
+
+            
+            <h1 className="text-6xl font-bold text-black">FitNation</h1>
+
         </View>
       );
     },
-  
+
     Footer() {
       const { tokens } = useTheme();
-  
+
       return (
         <View textAlign="center" padding={tokens.space.large}>
           <Text color={tokens.colors.neutral[80]}>
@@ -73,11 +77,11 @@ export default function SignInPage() {
         </View>
       );
     },
-  
+
     SignIn: {
       Header() {
         const { tokens } = useTheme();
-  
+
         return (
           <Heading
             padding={`${tokens.space.xl} 0 0 ${tokens.space.xl}`}
@@ -89,7 +93,7 @@ export default function SignInPage() {
       },
       Footer() {
         const { toForgotPassword } = useAuthenticator();
-  
+
         return (
           <View textAlign="center">
             <Button
@@ -98,17 +102,17 @@ export default function SignInPage() {
               size="small"
               variation="link"
             >
-              Recuperar Contraseña 
+              Recuperar Contraseña
             </Button>
           </View>
         );
       },
     },
-  
+
     SignUp: {
       Header() {
         const { tokens } = useTheme();
-  
+
         return (
           <Heading
             padding={`${tokens.space.xl} 0 0 ${tokens.space.xl}`}
@@ -120,7 +124,7 @@ export default function SignInPage() {
       },
       Footer() {
         const { toSignIn } = useAuthenticator();
-  
+
         return (
           <View textAlign="center">
             <Button
@@ -216,14 +220,11 @@ export default function SignInPage() {
       },
     },
   };
-  
-  
 
   return (
     <>
-
       <ThemeProvider theme={theme} colorMode="light">
-        <Authenticator  components={components}>
+        <Authenticator components={components}>
           {({ signOut, user }) => (
             <div>
               {/* <h1>Bienvenido, {user?.signInDetails?.loginId}</h1>
